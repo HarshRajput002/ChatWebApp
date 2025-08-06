@@ -1,15 +1,4 @@
-# Node modules
 node_modules/
-
-# Environment variables
 .env
-
-# Logs
 *.log
-
-# OS-specific files
-.DS_Store
-
-# Build files
-build/
-dist/
+.idea/
