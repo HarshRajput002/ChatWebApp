@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(to bottom right, #8625e6, #ece8e8);
+        min-height: 100vh;
+    }
+
+    .contain {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .box {
+        max-width: 400px;
+        width: 100%;
+        background-color: #fff;
+        border: 2px solid #a47ee3;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .box h1 {
+        text-align: center;
+        color: #8625e6;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .msg {
+        flex-grow: 1;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #8625e6;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+    }
+
+    #msg1,
+    #msg2 {
+        padding: 8px 12px;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+        margin-bottom: 10px;
+        display: inline-block;
+        clear: both;
+    }
+
+    #msg1 {
+        float: right;
+        background-color: #d6e0ff;
+    }
+
+    #msg2 {
+        float: left;
+        background-color: #d6ffd6;
+    }
+
+    .input-contain {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .text {
+        flex-grow: 1;
+        margin-right: 10px;
+        padding: 10px;
+        border: 1px solid #8625e6;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    #sendbtn {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    #sendbtn:hover {
+        background-color: #45a049;
+    }
+
+    .dropdown-menu {
+        width: 450px;
+        padding: 10px;
+    }
+
+    #grpright,
+    #grpleft {
+        padding: 8px 12px;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+        margin-bottom: 10px;
+        display: inline-block;
+        clear: both;
+    }
+
+    #grpright {
+        float: right;
+        background-color: #d6e0ff;
+    }
+
+    #grpleft {
+        float: left;
+        background-color: #d6ffd6;
+    }
+
+    #historyMessageModal {
+        z-index: 1051;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header h5,
+    .modal-header h1 {
+        color: #4b0082;
+        font-weight: bold;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    .navbar-dark .navbar-nav .nav-link {
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #5a35d3;
+        border-color: #5a35d3;
+    }
+
+    .btn-primary:hover {
+        background-color: #4723b5;
+        border-color: #4723b5;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+</head>
+
+<body>
+    <div class="modal fade" tabindex="-1" id="none" tabindex="-1" role="dialog" aria-labelledby="secondModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content  modal-dialog-scrollable">
+            <div class="modal-header">
+              <h5 class="modal-title">sorry user not found</h5>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="modal fade" tabindex="-1" id="historyMessageModal" tabindex="-1" role="dialog" aria-labelledby="secondModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content  modal-dialog-scrollable">
+            <div class="modal-header">
+              <h5 class="modal-title">Chat history</h5>
+            </div>
+            <div class="modal-body">
+              <p id="history"></p>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <div class="modal fade" id="roomMessageModal" tabindex="-1" aria-labelledby="roomMessageModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="till"></h1>
+                </div>
+                <div class="modal-body ">
+                    <center>
+                        <p id="grpjoin"></p>
+                    </center>
+                    <div id="grpchat"></div>
+                    <br>
+                    <form id="group">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="groupmsg" placeholder="enter your message"></textarea>
+                        </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Send message</button>
+                </div>
+                </form>
+            </div>
+        </div><!--room modal-->
+    </div>
+
+    <div class="modal fade" id="receiveMessageModal" tabindex="-1" aria-labelledby="receiveMessageModal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="title"></h1>
+                </div>
+                <div class="modal-body">
+                    <p id="rcmsg"></p>
+                    <form id="personal">
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message"></textarea>
+                        </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="clear">Send message</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#historyMessageModal">Chat history</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div><!-- modal -->
+
+    <nav class="navbar navbar-expand-lg navbar-inverse bg-dark ">
+        <a class="navbar-brand text-light" href="/">Socketio</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" href="/" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-users"></i>
+                    Group
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <form action="#" id="grp">
+                                    <label for="exampleInputEmail1" class="form-label">Enter Group name</label>
+                                    <input type="text" class="form-control" id="grpname" aria-describedby="emailHelp"
+                                        style="margin-left: 5px; width: 430px;;" required>
+
+                                    <center>
+                                        <button type="submit" class="btn btn-primary">join/Make Group</button>
+                                    </center>
+                                </form>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle   text-light" href="/" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                    Personal chat
+                </a>
+                <ul class="dropdown-menu">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <!-- <td>  <p id="user"></p> </td> -->
+                                Enter user name
+                                <form action="#" id="sende">
+                                    <input type="text" class="form-control" id="rece" aria-describedby="emailHelp"
+                                        style="margin-left: 5px; width: 430px;" required>
+                                    </div>
+                                    <center>
+                                        <button type="submit" class="btn btn-primary" id="req">Send Req</button>
+                                    </center>
+                                </form>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </li>
+
+        </ul>
+    </nav>
+
+    <input type="hidden" id="name" name="username">
+    <div class="contain">
+        <div class="box">
+            <h1>Chating</h1>
+            <div class="msg" id="msg">
+            </div>
+            <form action="#" id="sendform">
+                <input type="text" class="text" id="send" required>
+                <br>
+                <br>
+                <button type="submit" id="sendbtn">Send</button>
+            </form>
+        </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <script>
+        //  window.onblur = function() {
+        //         window.location.href = "/newtab";
+        //     };
+        fetch('/name')
+
+            .then(Response => Response.json())
+            .then(data => {
+                const name = data.name;
+                const socket = io("localhost:8000");
+                socket.emit("new-user", name)
+
+                //variable's
+                const form = document.getElementById("sendform");
+                const msg = document.getElementById("send");
+                const con = document.querySelector("#msg");
+                const req = document.getElementById("req");
+                const personal = document.getElementById("sende");
+                const resc = document.getElementById("rece")
+                const perchat = document.getElementById("personal")
+                const message = document.getElementById("message")
+                const history = document.getElementById("history")
+                const his=document.getElementById("his")
+                const clear=document.getElementById("clear")
+                const grpchat = document.getElementById("grp")
+                const grpmsg = document.getElementById("grpname");
+                const grpsend = document.getElementById("group");
+                const grp = document.getElementById("groupmsg");
+                const groupchat = document.getElementById("grpchat");
+                let recpname = {}
+                let room = {}
+
+                socket.on("user-join", (name) => {
+                    const p = document.createElement('div');
+                    p.setAttribute('id', 'msg1');
+                    p.innerText = name + " " + "join the chat";
+                    document.getElementById("name").value = name
+                    con.appendChild(p);
+                })
+                socket.on("mesages", (message, names) => {
+                    if (names == name) {
+                        const p = document.createElement('div');
+                        p.setAttribute('id', 'msg1');
+                        p.innerText = message;
+                        con.append(p);
+                    }
+                    else {
+                        const p = document.createElement('div');
+                        p.setAttribute('id', 'msg2');
+                        p.innerText = message;
+                        con.append(p);
+                        console.log("diffrent user")
+                    }
+                });
+
+
+                socket.on("left", (name) => {
+                    const p = document.createElement('div');
+                    p.setAttribute('id', 'msg2');
+                    p.innerText = name + " " + "left the chat";
+                    con.appendChild(p);
+                })
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const message = name + ":" + msg.value
+                    socket.emit('message', message, name);
+                    msg.value = '';
+                });
+                //personal
+                socket.on('percon', (rec) => {
+                    const receiveMessageModal = new bootstrap.Modal(document.getElementById('receiveMessageModal'));
+                    const til = document.getElementById("title");
+                    recpname = rec
+                    til.innerText = rec + " " + "Send you request"
+                    receiveMessageModal.show();
+                })
+                socket.on("chat", (mess, names) => {
+                    recpname = names;
+                    if(name == names){
+                    const receiveMessageModal = new bootstrap.Modal(document.getElementById('receiveMessageModal'));
+                    const til = document.getElementById("title");
+                    til.innerText = "New message"
+                    const info = document.getElementById("rcmsg");
+                    info.innerText = names + ":" + mess
+                    receiveMessageModal.show();
+                    const p = document.createElement('div');
+                    p.setAttribute('id', 'grpright');
+                    p.innerText = names + ":" +mess;
+                    history.appendChild(p);
+                    info.value = '';
+                    }
+                    else{
+                     const receiveMessageModal = new bootstrap.Modal(document.getElementById('receiveMessageModal'));
+                    const til = document.getElementById("title");
+                    til.innerText = "New message"
+                    const info = document.getElementById("rcmsg");
+                    info.innerText = names + ":" + mess
+                    receiveMessageModal.show();
+                    const p = document.createElement('div');
+                    p.setAttribute('id', 'grpleft');
+                    p.innerText = names + ":" +mess;
+                    history.appendChild(p);
+                    }
+                })
+
+                socket.on("none",()=>{
+                    const receiveMessageModal = new bootstrap.Modal(document.getElementById('none'));
+                    receiveMessageModal.show();
+                })
+                //group
+                socket.on("group", (rooms, name) => {
+                        console.log("ok");
+                        const receiveMessageModal = new bootstrap.Modal(document.getElementById('roomMessageModal'));
+                        const til = document.getElementById("till");
+                        til.innerText = "welcome in this room:" + " " + rooms
+                        const join = document.getElementById("grpjoin");
+                        join.innerText = name + " " + "join this room"
+                        receiveMessageModal.show();
+                        room = rooms
+
+                })
+
+                socket.on("grp", (message, names) => {
+                    console.log("hi");
+                    if (names == name) {
+                        const p = document.createElement('div');
+                        p.setAttribute('id', 'grpright');
+                        p.innerText = name + ":" + message;
+                        groupchat.append(p);
+                    }
+                    else {
+                        const p = document.createElement('div');
+                        p.setAttribute('id', 'grpleft');
+                        p.innerText = names + ":" + message;
+                        groupchat.append(p);
+                        //diffent user
+                    }
+                })
+                //personal chat form
+                personal.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const message = resc.value
+                    console.log(message)
+                    socket.emit('perchat', message, name);
+                });
+
+                perchat.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const mess = message.value
+                    room = message.value
+                    socket.emit('pechat', mess, name, recpname);
+                    console.log(mess)
+                   
+                });
+                clear.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    message.value = '';
+                    
+                   
+                });
+                //group(room) chat form
+                grpchat.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const grpname = grpmsg.value
+                    socket.emit('grpchat', grpname, name);
+                });
+
+                grpsend.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    console.log(room)
+                    const message = grp.value
+                    socket.emit('grpmsg', message, name);
+                });
+
+
+                fetch('/perchat')
+
+                    .then(Response => Response.json())
+                    .then(data => {
+                        const user = document.getElementById("user");
+                        const d = JSON.stringify(data);
+                        user.innerText = d;
+                    })
+
+
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
